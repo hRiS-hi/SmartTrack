@@ -5,8 +5,8 @@ import jakarta.mail.internet._
 object EmailSender {
 
   def sendEmail(subject: String, body: String, to: String): Unit = {
-    val fromEmail = "hrisheekeshgnair@gmail.com"  // Your Gmail address
-    val appPassword = "yqtg rboy wuya sicp"    // Your Gmail App Password
+    val fromEmail = "anonymous@email.com"  // Your Gmail address
+    val appPassword = "anonymous"    // Your Gmail App Password
 
     val props = new Properties()
     props.put("mail.smtp.host", "smtp.gmail.com")  // Gmail SMTP server
@@ -37,6 +37,6 @@ object EmailSender {
   }
 
   def main(args: Array[String]): Unit = {
-    sendEmail("Scala Email Subject", "Hello from Scala!", "hrisheekeshgnair@gmail.com")
+    sendEmail("Scala Email Subject", "Hello from Scala!", "anonymous@email.com")
   }
 }
