@@ -5,8 +5,8 @@ import jakarta.mail._
 import jakarta.mail.internet._
 
 object EmailSender {
-  private val username = "hrisheekeshgnair@gmail.com"
-  private val password = "yqtg rboy wuya sicp" // Replace with your Gmail App Password
+  private val username = "anonymous@email.com"
+  private val password = "anony" // Replace with your Gmail App Password
 
   def sendEmail(subject: String, body: String, recipient: String): Unit = {
     val props = new Properties()
