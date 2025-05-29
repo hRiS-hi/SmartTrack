@@ -1,4 +1,4 @@
-# SmartTrack: Intelligent Attendance Management System
+# 📋SmartTrack: Intelligent Attendance Management System
 
 A modern, GUI-based attendance management system built with Scala and ScalaFX that allows Class Representatives (CRs) to submit attendance records and students to check their attendance status.
 
