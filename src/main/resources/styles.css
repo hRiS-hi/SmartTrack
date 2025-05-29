@@ -1,0 +1,36 @@
+.root {
+    -fx-background-color: #f0f0f0;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 4px;
+}
+
+.button:hover {
+    -fx-background-color: #45a049;
+}
+
+.text-field, .password-field {
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+    -fx-background-radius: 4px;
+}
+
+.label {
+    -fx-font-size: 14px;
+}
+
+.text-area {
+    -fx-font-size: 14px;
+    -fx-background-radius: 4px;
+}
+
+.combo-box {
+    -fx-font-size: 14px;
+    -fx-background-radius: 4px;
+} 
