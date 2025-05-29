@@ -1,42 +1,37 @@
+package attendance
+
 import java.util.Properties
 import jakarta.mail._
 import jakarta.mail.internet._
 
 object EmailSender {
+  private val username = "hrisheekeshgnair@gmail.com"
+  private val password = "yqtg rboy wuya sicp" // Replace with your Gmail App Password
 
-  def sendEmail(subject: String, body: String, to: String): Unit = {
-    val fromEmail = "anonymous@email.com"  // Your Gmail address
-    val appPassword = "anonymous"    // Your Gmail App Password
-
+  def sendEmail(subject: String, body: String, recipient: String): Unit = {
     val props = new Properties()
-    props.put("mail.smtp.host", "smtp.gmail.com")  // Gmail SMTP server
-    props.put("mail.smtp.port", "587")
     props.put("mail.smtp.auth", "true")
     props.put("mail.smtp.starttls.enable", "true")
-    props.put("mail.smtp.ssl.trust", "smtp.gmail.com")
+    props.put("mail.smtp.host", "smtp.gmail.com")
+    props.put("mail.smtp.port", "587")
 
-    val session = Session.getInstance(props, new Authenticator() {
-      override protected def getPasswordAuthentication: PasswordAuthentication =
-        new PasswordAuthentication(fromEmail, appPassword)
+    val session = Session.getInstance(props, new Authenticator {
+      override def getPasswordAuthentication: PasswordAuthentication = {
+        new PasswordAuthentication(username, password)
+      }
     })
 
     try {
       val message = new MimeMessage(session)
-      message.setFrom(new InternetAddress(fromEmail))
-      message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to).asInstanceOf[Array[Address]])
+      message.setFrom(new InternetAddress(username))
+      message.setRecipients(Message.RecipientType.TO, recipient)
       message.setSubject(subject)
       message.setText(body)
 
       Transport.send(message)
-      println("Email sent successfully!")
     } catch {
-      case e: MessagingException =>
-        println(s"Failed to send email: ${e.getMessage}")
-        e.printStackTrace()
+      case e: Exception =>
+        throw new RuntimeException(s"Failed to send email: ${e.getMessage}", e)
     }
-  }
-
-  def main(args: Array[String]): Unit = {
-    sendEmail("Scala Email Subject", "Hello from Scala!", "anonymous@email.com")
   }
 }

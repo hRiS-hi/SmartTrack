@@ -1,1 +1,1 @@
-["AttendanceGUI","AttendanceSystem","EmailSender","Menu"]
+["attendance.AttendanceGUI","attendance.AttendanceSystem","attendance.Menu"]

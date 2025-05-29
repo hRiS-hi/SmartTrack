@@ -1,3 +1,5 @@
+package attendance
+
 import org.mongodb.scala._
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Updates._
@@ -18,7 +20,11 @@ case class AttendanceRecord(
 )
 
 object AttendanceRecord {
-  private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+  private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+  def formatDateTime(dateTime: LocalDateTime): String = {
+    dateTime.format(formatter)
+  }
 
   def saveRecord(record: AttendanceRecord): Unit = {
     val doc = Document(
@@ -36,7 +42,7 @@ object AttendanceRecord {
       5.seconds
     )
   }
-  
+
   def getRecordsByDate(date: LocalDateTime): List[AttendanceRecord] = {
     val dateStr = date.toString.split("T")(0) // Get just the date part
     val future = MongoConnection.attendanceCollection
@@ -55,9 +61,5 @@ object AttendanceRecord {
         doc.get("timeSlot").get.asString().getValue
       )
     ).toList
-  }
-
-  def formatDateTime(dateTime: LocalDateTime): String = {
-    dateTime.format(dateFormatter)
   }
 } 

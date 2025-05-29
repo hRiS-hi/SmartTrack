@@ -1,15 +1,21 @@
+package attendance
+
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control._
-import scalafx.scene.layout.{GridPane, VBox, HBox}
-import scalafx.scene.text.Text
+import scalafx.scene.layout.{HBox, VBox}
+import scalafx.scene.paint.Color
+import scalafx.scene.text.{Font, FontWeight}
 import scalafx.Includes._
-import scalafx.event.ActionEvent
+import scalafx.scene.control.Alert.AlertType
+import scalafx.scene.control.ButtonBar.ButtonData
 import scalafx.stage.Stage
 import scalafx.collections.ObservableBuffer
+import scalafx.event.ActionEvent
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import scala.util.{Try, Success, Failure}
 
 // Import our Menu object
@@ -32,51 +38,114 @@ object AttendanceGUI extends JFXApp3 {
 
   override def start(): Unit = {
     stage = new PrimaryStage {
-      title = "Attendance Management System"
-      scene = new Scene(800, 600) {
-        stylesheets.add(getClass.getResource("/styles.css").toExternalForm)
-        
-        val mainLayout = new VBox {
-          spacing = 10
-          padding = Insets(20)
-          alignment = Pos.Center
-          
-          // Title
-          val title = new Text("Attendance Management System") {
-            style = "-fx-font-size: 24px; -fx-font-weight: bold;"
-          }
-          
-          // Main menu buttons
-          val studentBtn = new Button("Student View") {
-            prefWidth = 200
-            onAction = (e: ActionEvent) => showStudentView()
-          }
-          
-          val crBtn = new Button("CR View") {
-            prefWidth = 200
-            onAction = (e: ActionEvent) => showCRView()
-          }
-          
-          val facultyBtn = new Button("Faculty Management") {
-            prefWidth = 200
-            onAction = (e: ActionEvent) => showFacultyView()
-          }
-          
-          children = Seq(
-            title,
-            new VBox {
-              spacing = 10
-              alignment = Pos.Center
-              children = Seq(studentBtn, crBtn, facultyBtn)
-            }
-          )
-        }
-        
-        root = mainLayout
-      }
+      title = "SmartTrack: Attendance Management System"
+      scene = createMainScene()
     }
   }
-  
+
+  private def createMainScene(): Scene = {
+    val studentViewBtn = new Button("Student View") {
+      style = "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"
+      prefWidth = 200
+      prefHeight = 50
+      onAction = _ => showStudentView()
+    }
+
+    val crLoginBtn = new Button("CR Login") {
+      style = "-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
+      prefWidth = 200
+      prefHeight = 50
+      onAction = _ => showCRLogin()
+    }
+
+    val titleLabel = new Label("SmartTrack") {
+      font = Font.font("Arial", FontWeight.Bold, 36)
+      textFill = Color.DarkBlue
+    }
+
+    val subtitleLabel = new Label("Intelligent Attendance Management System") {
+      font = Font.font("Arial", FontWeight.Normal, 18)
+      textFill = Color.Gray
+    }
+
+    val buttonBox = new VBox(20) {
+      alignment = Pos.Center
+      children = Seq(studentViewBtn, crLoginBtn)
+    }
+
+    val mainLayout = new VBox(30) {
+      alignment = Pos.Center
+      padding = Insets(50)
+      children = Seq(titleLabel, subtitleLabel, buttonBox)
+      style = "-fx-background-color: white;"
+    }
+
+    new Scene(mainLayout, 800, 600)
+  }
+
+  private def showCRLogin(): Unit = {
+    val dialog = new TextInputDialog() {
+      title = "CR Authentication"
+      headerText = "Enter CR Password"
+      contentText = "Please enter the CR password:"
+    }
+
+    val result = dialog.showAndWait()
+    result match {
+      case Some(password) if password == CR_PASSWORD =>
+        showCRMenu()
+      case Some(_) =>
+        new Alert(AlertType.Error) {
+          title = "Authentication Failed"
+          headerText = "Invalid Password"
+          contentText = "The password you entered is incorrect."
+        }.showAndWait()
+      case None => // Dialog was cancelled
+    }
+  }
+
+  private def showCRMenu(): Unit = {
+    val facultyManagementBtn = new Button("Faculty Management") {
+      style = "-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
+      prefWidth = 200
+      prefHeight = 50
+      onAction = _ => showFacultyManagement()
+    }
+
+    val absenteeRecordBtn = new Button("Absentee Record") {
+      style = "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"
+      prefWidth = 200
+      prefHeight = 50
+      onAction = _ => showAbsenteeRecord()
+    }
+
+    val backBtn = new Button("Back to Main Menu") {
+      style = "-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 14px;"
+      prefWidth = 200
+      prefHeight = 50
+      onAction = _ => stage.scene = createMainScene()
+    }
+
+    val buttonBox = new VBox(20) {
+      alignment = Pos.Center
+      children = Seq(facultyManagementBtn, absenteeRecordBtn, backBtn)
+    }
+
+    val titleLabel = new Label("CR Menu") {
+      font = Font.font("Arial", FontWeight.Bold, 36)
+      textFill = Color.DarkBlue
+    }
+
+    val mainLayout = new VBox(30) {
+      alignment = Pos.Center
+      padding = Insets(50)
+      children = Seq(titleLabel, buttonBox)
+      style = "-fx-background-color: white;"
+    }
+
+    stage.scene = new Scene(mainLayout, 800, 600)
+  }
+
   private def showStudentView(): Unit = {
     val studentStage = new Stage {
       title = "Student View"
@@ -136,123 +205,7 @@ object AttendanceGUI extends JFXApp3 {
     studentStage.show()
   }
   
-  private def showCRView(): Unit = {
-    val crStage = new Stage {
-      title = "CR View"
-      scene = new Scene(500, 400) {
-        val layout = new VBox {
-          spacing = 10
-          padding = Insets(20)
-          alignment = Pos.Center
-          
-          // Password field
-          val passwordLabel = new Label("Enter Password:")
-          val passwordField = new PasswordField()
-          
-          // Course details
-          val courseLabel = new Label("Course Code:")
-          val courseField = new TextField()
-          
-          val slotLabel = new Label("Time Slot:")
-          val slotCombo = new ComboBox[String] {
-            items = ObservableBuffer.from(timeSlots.map { case (_, time) => time })
-          }
-          
-          val absentLabel = new Label("Absent Roll Numbers (comma-separated):")
-          val absentField = new TextField()
-          
-          val submitBtn = new Button("Submit Attendance") {
-            onAction = (e: ActionEvent) => {
-              if (passwordField.text.value == CR_PASSWORD) {
-                val courseCode = courseField.text.value
-                val absentees = absentField.text.value.split(",").map(_.trim).toList
-                val timeSlot = slotCombo.value.value
-                
-                if (absentees.nonEmpty) {
-                  Faculty.getFacultyByCourse(courseCode) match {
-                    case Some(faculty) =>
-                      val now = LocalDateTime.now()
-                      val record = AttendanceRecord(
-                        courseCode = courseCode,
-                        facultyName = faculty.name,
-                        facultyEmail = faculty.email,
-                        date = now,
-                        absentRollNumbers = absentees,
-                        submittedBy = "CR",
-                        timeSlot = timeSlot
-                      )
-                      
-                      AttendanceRecord.saveRecord(record)
-                      
-                      val emailSubject = s"Attendance Report - $courseCode"
-                      val emailBody = s"""
-                        |Course: $courseCode
-                        |Date: ${AttendanceRecord.formatDateTime(now)}
-                        |Time Slot: $timeSlot
-                        |Submitted by: CR
-                        |
-                        |Absent Students:
-                        |${absentees.mkString("\n")}
-                        |""".stripMargin
-                      
-                      try {
-                        EmailSender.sendEmail(emailSubject, emailBody, faculty.email)
-                        new Alert(Alert.AlertType.Information) {
-                          title = "Success"
-                          headerText = "Attendance Recorded"
-                          contentText = s"Attendance recorded and email sent to ${faculty.name}"
-                        }.showAndWait()
-                      } catch {
-                        case e: Exception =>
-                          // Still show success for attendance recording
-                          new Alert(Alert.AlertType.Warning) {
-                            title = "Partial Success"
-                            headerText = "Attendance Recorded"
-                            contentText = s"Attendance was recorded successfully, but email could not be sent.\nError: ${e.getMessage}"
-                          }.showAndWait()
-                      }
-                      
-                    case None =>
-                      new Alert(Alert.AlertType.Error) {
-                        title = "Error"
-                        headerText = "Faculty Not Found"
-                        contentText = s"No faculty found for course: $courseCode"
-                      }.showAndWait()
-                  }
-                } else {
-                  new Alert(Alert.AlertType.Warning) {
-                    title = "Warning"
-                    headerText = "No Absentees"
-                    contentText = "No absentees provided. Record not saved."
-                  }.showAndWait()
-                }
-              } else {
-                new Alert(Alert.AlertType.Error) {
-                  title = "Error"
-                  headerText = "Invalid Password"
-                  contentText = "Invalid password!"
-                }.showAndWait()
-              }
-            }
-          }
-          
-          children = Seq(
-            passwordLabel, passwordField,
-            courseLabel, courseField,
-            slotLabel, slotCombo,
-            absentLabel, absentField,
-            submitBtn
-          )
-        }
-        
-        root = layout
-      }
-    }
-    
-    crStage.show()
-  }
-  
-  private def showFacultyView(): Unit = {
+  private def showFacultyManagement(): Unit = {
     val facultyStage = new Stage {
       title = "Faculty Management"
       scene = new Scene(600, 500) {
@@ -345,5 +298,108 @@ object AttendanceGUI extends JFXApp3 {
     }
     
     facultyStage.show()
+  }
+  
+  private def showAbsenteeRecord(): Unit = {
+    val crStage = new Stage {
+      title = "Absentee Record"
+      scene = new Scene(500, 400) {
+        val layout = new VBox {
+          spacing = 10
+          padding = Insets(20)
+          alignment = Pos.Center
+          
+          // Course details
+          val courseLabel = new Label("Course Code:")
+          val courseField = new TextField()
+          
+          val slotLabel = new Label("Time Slot:")
+          val slotCombo = new ComboBox[String] {
+            items = ObservableBuffer.from(timeSlots.map { case (_, time) => time })
+          }
+          
+          val absentLabel = new Label("Absent Roll Numbers (comma-separated):")
+          val absentField = new TextField()
+          
+          val submitBtn = new Button("Submit Attendance") {
+            onAction = (e: ActionEvent) => {
+              val courseCode = courseField.text.value
+              val absentees = absentField.text.value.split(",").map(_.trim).toList
+              val timeSlot = slotCombo.value.value
+              
+              if (absentees.nonEmpty) {
+                Faculty.getFacultyByCourse(courseCode) match {
+                  case Some(faculty) =>
+                    val now = LocalDateTime.now()
+                    val record = AttendanceRecord(
+                      courseCode = courseCode,
+                      facultyName = faculty.name,
+                      facultyEmail = faculty.email,
+                      date = now,
+                      absentRollNumbers = absentees,
+                      submittedBy = "CR",
+                      timeSlot = timeSlot
+                    )
+                    
+                    AttendanceRecord.saveRecord(record)
+                    
+                    val emailSubject = s"Attendance Report - $courseCode"
+                    val emailBody = s"""
+                      |Course: $courseCode
+                      |Date: ${AttendanceRecord.formatDateTime(now)}
+                      |Time Slot: $timeSlot
+                      |Submitted by: CR
+                      |
+                      |Absent Students:
+                      |${absentees.mkString("\n")}
+                      |""".stripMargin
+                    
+                    try {
+                      EmailSender.sendEmail(emailSubject, emailBody, faculty.email)
+                      new Alert(Alert.AlertType.Information) {
+                        title = "Success"
+                        headerText = "Attendance Recorded"
+                        contentText = s"Attendance recorded and email sent to ${faculty.name}"
+                      }.showAndWait()
+                    } catch {
+                      case e: Exception =>
+                        // Still show success for attendance recording
+                        new Alert(Alert.AlertType.Warning) {
+                          title = "Partial Success"
+                          headerText = "Attendance Recorded"
+                          contentText = s"Attendance was recorded successfully, but email could not be sent.\nError: ${e.getMessage}"
+                        }.showAndWait()
+                    }
+                    
+                  case None =>
+                    new Alert(Alert.AlertType.Error) {
+                      title = "Error"
+                      headerText = "Faculty Not Found"
+                      contentText = s"No faculty found for course: $courseCode"
+                    }.showAndWait()
+                }
+              } else {
+                new Alert(Alert.AlertType.Warning) {
+                  title = "Warning"
+                  headerText = "No Absentees"
+                  contentText = "No absentees provided. Record not saved."
+                }.showAndWait()
+              }
+            }
+          }
+          
+          children = Seq(
+            courseLabel, courseField,
+            slotLabel, slotCombo,
+            absentLabel, absentField,
+            submitBtn
+          )
+        }
+        
+        root = layout
+      }
+    }
+    
+    crStage.show()
   }
 } 

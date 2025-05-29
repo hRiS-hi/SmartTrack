@@ -1,3 +1,5 @@
+package attendance
+
 import scala.io.StdIn
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -54,9 +56,10 @@ object Menu {
   }
 
   def handleStudent(): Unit = {
-    println("\nStudent View:")
+    println("\n=== Student View ===")
     print("Enter your roll number: ")
     val rollInput = StdIn.readLine()
+    
     val rollTry = Try(rollInput.trim.toInt)
     rollTry match {
       case Success(rollNumber) =>
@@ -65,14 +68,14 @@ object Menu {
         val absences = records.filter(_.absentRollNumbers.contains(rollNumber.toString))
         
         if (absences.isEmpty) {
-          println(s"Roll number $rollNumber is not marked absent in any course today.")
+          println(s"Roll number $rollNumber is not marked absent in any course.")
         } else {
-          println(s"\nRoll number $rollNumber is absent for the following courses today:")
+          println(s"\nRoll number $rollNumber is absent for the following courses:")
           absences.foreach { record =>
             val dateTime = AttendanceRecord.formatDateTime(record.date)
             val date = dateTime.split(" ")(0)
             val time = dateTime.split(" ")(1)
-            println(s"Course: ${record.courseCode}")
+            println(s"\nCourse: ${record.courseCode}")
             println(s"DATE: $date")
             println(s"TIME: $time")
             println("-------------------")
@@ -84,79 +87,115 @@ object Menu {
   }
 
   def handleCR(): Unit = {
-    println("\nCR Authentication")
+    println("\n=== CR View ===")
     print("Enter password: ")
-    
     val password = StdIn.readLine()
-
+    
     if (password == CR_PASSWORD) {
-      println("\nEnter attendance details:")
-      displayTimeSlots()
-      print("Enter slot number (1-7): ")
-      
-      val slotInput = StdIn.readLine()
-      val slot = Try(slotInput.trim.toInt) match {
-        case Success(number) if timeSlots.exists(_._1 == number) => number
-        case _ =>
-          println("Invalid slot number! Please enter a number between 1 and 7.")
-          return
-      }
-      
-      print("Course code: ")
-      val courseCode = StdIn.readLine()
-      
-      // Check if faculty exists for this course
-      Faculty.getFacultyByCourse(courseCode) match {
-        case Some(faculty) =>
-          print("List of absentees (comma-separated roll numbers): ")
-          val absenteesInput = StdIn.readLine()
-          val absentees = absenteesInput.split(",")
-            .map(_.trim)
-            .toList
-
-          if (absentees.nonEmpty) {
-            // Get current date and time
-            val now = LocalDateTime.now()
-            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+      var running = true
+      while (running) {
+        println("\n1. Submit Attendance")
+        println("2. Add Faculty")
+        println("3. View All Faculty")
+        println("4. Exit")
+        print("Choose an option: ")
+        
+        StdIn.readLine() match {
+          case "1" =>
+            print("Enter course code: ")
+            val courseCode = StdIn.readLine()
             
-            // Get time slot
-            val timeSlot = timeSlots.find(_._1 == slot).map(_._2).getOrElse("")
+            Faculty.getFacultyByCourse(courseCode) match {
+              case Some(faculty) =>
+                print("Enter time slot (1-7): ")
+                val timeSlotInput = StdIn.readLine()
+                val timeSlot = timeSlotInput match {
+                  case "1" => "9:00-9:50"
+                  case "2" => "10:00-10:50"
+                  case "3" => "11:00-11:50"
+                  case "4" => "12:00-12:50"
+                  case "5" => "14:00-14:50"
+                  case "6" => "15:00-15:50"
+                  case "7" => "16:00-16:50"
+                  case _ => "Unknown"
+                }
+                
+                print("Enter absent roll numbers (comma-separated): ")
+                val absentees = StdIn.readLine().split(",").map(_.trim).toList
+                
+                if (absentees.nonEmpty) {
+                  val now = LocalDateTime.now()
+                  val record = AttendanceRecord(
+                    courseCode = courseCode,
+                    facultyName = faculty.name,
+                    facultyEmail = faculty.email,
+                    date = now,
+                    absentRollNumbers = absentees,
+                    submittedBy = "CR", // Fixed value instead of asking for name
+                    timeSlot = timeSlot
+                  )
+                  
+                  AttendanceRecord.saveRecord(record)
+                  
+                  val emailSubject = s"Attendance Report - $courseCode"
+                  val emailBody = s"""
+                    |Course: $courseCode
+                    |Date: ${AttendanceRecord.formatDateTime(now)}
+                    |Time Slot: $timeSlot
+                    |Submitted by: CR
+                    |
+                    |Absent Students:
+                    |${absentees.mkString("\n")}
+                    |""".stripMargin
+                  
+                  try {
+                    EmailSender.sendEmail(emailSubject, emailBody, faculty.email)
+                    println(s"Attendance recorded and email sent to ${faculty.name} (${faculty.email})")
+                  } catch {
+                    case e: Exception =>
+                      println(s"Failed to send email: ${e.getMessage}")
+                      println("Attendance was recorded but email could not be sent.")
+                  }
+                } else {
+                  println("No absentees provided. Record not saved.")
+                }
+                
+              case None =>
+                println(s"No faculty found for course: $courseCode")
+            }
             
-            // Create attendance record
-            val record = AttendanceRecord(
-              courseCode = courseCode,
-              facultyName = faculty.name,
-              facultyEmail = faculty.email,
-              date = now,
-              absentRollNumbers = absentees,
-              submittedBy = "CR", // Fixed value instead of asking for name
-              timeSlot = timeSlot
-            )
+          case "2" =>
+            print("Enter faculty name: ")
+            val name = StdIn.readLine()
+            print("Enter email: ")
+            val email = StdIn.readLine()
+            print("Enter courses (comma-separated): ")
+            val courses = StdIn.readLine().split(",").map(_.trim).toList
             
-            // Save the record
-            AttendanceRecord.saveRecord(record)
+            val faculty = Faculty(name, email, courses)
+            Faculty.saveFaculty(faculty)
+            println(s"Faculty added: $name")
             
-            // Send email notification
-            val emailSubject = s"Attendance Report - $courseCode"
-            val emailBody = s"""
-              |Course: $courseCode
-              |Date: ${now.format(dateFormatter)}
-              |Time Slot: $timeSlot
-              |Submitted by: CR
-              |
-              |Absent Students:
-              |${absentees.mkString("\n")}
-              |""".stripMargin
+          case "3" =>
+            val allFaculty = Faculty.getAllFaculty
+            if (allFaculty.isEmpty) {
+              println("No faculty members found.")
+            } else {
+              println("\nFaculty Members:")
+              allFaculty.foreach { f =>
+                println(s"\nName: ${f.name}")
+                println(s"Email: ${f.email}")
+                println(s"Courses: ${f.courses.mkString(", ")}")
+                println("-------------------")
+              }
+            }
             
-            EmailSender.sendEmail(emailSubject, emailBody, faculty.email)
+          case "4" =>
+            running = false
             
-            println(s"Attendance recorded and email sent to ${faculty.name} (${faculty.email})")
-          } else {
-            println("No absentees provided. Record not saved.")
-          }
-          
-        case None =>
-          println(s"No faculty found for course: $courseCode")
+          case _ =>
+            println("Invalid option!")
+        }
       }
     } else {
       println("Invalid password!")

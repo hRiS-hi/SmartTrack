@@ -5,8 +5,9 @@ A modern, GUI-based attendance management system built with Scala and ScalaFX th
 ## Features
 
 - **Student View**: Check attendance status by roll number
-- **CR View**: Submit attendance records with password protection
-- **Faculty Management**: Add and view faculty members
+- **CR View** (Password Protected):
+  - Faculty Management: Add and view faculty members
+  - Absentee Record: Submit attendance records
 - **Email Notifications**: Automatic email alerts to faculty members
 - **MongoDB Integration**: Persistent storage of attendance and faculty data
 
@@ -22,10 +23,14 @@ A modern, GUI-based attendance management system built with Scala and ScalaFX th
 
 ### 1. `AttendanceGUI.scala`
 The main application file that implements the GUI interface using ScalaFX.
-- Creates the main window with three buttons (Student View, CR View, Faculty Management)
+- Creates the main window with two initial buttons:
+  - Student View: For checking attendance
+  - CR Login: Password-protected access
+- After CR authentication, provides access to:
+  - Faculty Management: Add and view faculty members
+  - Absentee Record: Submit attendance records
 - Implements student attendance checking functionality
 - Handles CR authentication and attendance submission
-- Manages faculty addition and viewing
 - Uses modern UI components like ComboBox, TextArea, and Alert dialogs
 
 ### 2. `AttendanceRecord.scala`
