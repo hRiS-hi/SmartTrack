@@ -169,8 +169,8 @@ object AttendanceGUI extends JFXApp3 {
               
               rollTry match {
                 case Success(rollNumber) =>
-                  val today = LocalDateTime.now()
-                  val records = AttendanceRecord.getRecordsByDate(today)
+                  
+                  val records = AttendanceRecord.getRecordsByRollNumber(rollNumber.toString)
                   val absences = records.filter(_.absentRollNumbers.contains(rollNumber.toString))
                   
                   if (absences.isEmpty) {
@@ -179,12 +179,13 @@ object AttendanceGUI extends JFXApp3 {
                     val result = new StringBuilder
                     result.append(s"Roll number $rollNumber is absent for the following courses:\n\n")
                     absences.foreach { record =>
+
                       val dateTime = AttendanceRecord.formatDateTime(record.date)
                       val date = dateTime.split(" ")(0)
-                      val time = dateTime.split(" ")(1)
+                     
                       result.append(s"Course: ${record.courseCode}\n")
                       result.append(s"DATE: $date\n")
-                      result.append(s"TIME: $time\n")
+                      result.append(s"Time-Slot: ${record.timeSlot}\n")
                       result.append("-------------------\n")
                     }
                     resultArea.text = result.toString()
@@ -348,6 +349,7 @@ object AttendanceGUI extends JFXApp3 {
                       |Course: $courseCode
                       |Date: ${AttendanceRecord.formatDateTime(now)}
                       |Time Slot: $timeSlot
+                      |Class: AI-B
                       |Submitted by: CR
                       |
                       |Absent Students:

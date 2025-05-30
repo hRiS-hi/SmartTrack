@@ -39,7 +39,7 @@ Model class for attendance records with MongoDB integration.
 - Handles date/time formatting
 - Provides methods to:
   - Save attendance records to MongoDB
-  - Retrieve records by date
+  - Retrieve records by roll number
   - Format dates for display
 
 ### 3. `Faculty.scala`

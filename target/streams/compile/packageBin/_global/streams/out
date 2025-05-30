@@ -90,10 +90,6 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  F:\sem6\BDA\Project\target\scala-2.13\classes\attendance\AttendanceRecord$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	attendance\AttendanceRecord.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  F:\sem6\BDA\Project\target\scala-2.13\classes\attendance\AttendanceRecord.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	attendance\AttendanceSystem$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  F:\sem6\BDA\Project\target\scala-2.13\classes\attendance\AttendanceSystem$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	attendance\AttendanceSystem.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  F:\sem6\BDA\Project\target\scala-2.13\classes\attendance\AttendanceSystem.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	attendance\EmailSender$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  F:\sem6\BDA\Project\target\scala-2.13\classes\attendance\EmailSender$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	attendance\EmailSender$.class[0m
@@ -104,10 +100,6 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  F:\sem6\BDA\Project\target\scala-2.13\classes\attendance\Faculty$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	attendance\Faculty.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  F:\sem6\BDA\Project\target\scala-2.13\classes\attendance\Faculty.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	attendance\Menu$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  F:\sem6\BDA\Project\target\scala-2.13\classes\attendance\Menu$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	attendance\Menu.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  F:\sem6\BDA\Project\target\scala-2.13\classes\attendance\Menu.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	attendance\MongoConnection$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  F:\sem6\BDA\Project\target\scala-2.13\classes\attendance\MongoConnection$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	attendance\MongoConnection.class[0m
